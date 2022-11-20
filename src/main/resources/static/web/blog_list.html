@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客列表</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/blog_list.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+</head>
+<body>
+<!-- 导航栏 -->
+<div class="nav">
+    <img src="../imgs/风景.jpeg" alt="">
+    <span>我的博客系统</span>
+    <div class="spacer"></div>
+    <a href="blog_list.html">主页</a>
+    <a href="blog_edit.html">写博客</a>
+</div>
+<!-- 这里的.container作为页面的版心 -->
+<div class="container">
+    <!-- 左侧个人信息 -->
+    <div class="left">
+        <!-- 表示整个用户的信息区域 -->
+        <div class="card">
+            <img src="../imgs/宝宝.jpg" alt="">
+            <h3>力高宝宝</h3>
+            <div class="counter">
+                <span>文章</span>
+                <span>分类</span>
+            </div>
+            <div class="counter">
+                <span>2</span>
+                <span>1</span>
+            </div>
+        </div>
+    </div>
+    <!-- 右侧内容详情 -->
+    <div class="right">
+        <!-- .blog就对应表示一个博客 -->
+    </div>
+</div>
+</div>
+</body>
+<script>
+
+
+    $(document).ready(function(){
+        $.ajax({
+            url: "/blog/findAll",
+            type: "get",
+            dataType: "json",
+            success: function (res) {
+                for (let i = 0; i < res.data.length; i++) {
+                    let str = "";
+                    let blog = res.data[i]
+                    str = " <div class=\"blog\" id='#{id}'>"
+                        + "<div class=\"title\" style='border: 0px solid white'>"
+                        + "<a href='javascript:void(0);'onclick='jumpWithId(#{id})'>" + blog.btitle + "</a>"
+                        + "</div>"
+                        + "<div class=\"date\">" + blog.btime + "</div>"
+                        + "<div class=\"desc\">"
+                        + blog.bcontext
+                        + "</div>"
+                        + " <a href='javascript:void(0);'onclick='modifyWithId(#{id})' id='more'>编辑 &gt;&gt;</a>"
+                        + " <a href='javascript:void(0);'onclick='deletWithId(#{id})' id='more'>删除 &gt;&gt;</a>"
+                        + " <a href='javascript:void(0);'onclick='jumpWithId(#{id})' id='more'>查看全文 &gt;&gt;</a>"
+                        + "</div>"
+                    str = str.replaceAll("#{id}", blog.id)
+                    $(".right").append(str)
+                }
+            },
+            error: function () {
+                alert("查询错误！！")
+            }
+        })
+    })
+    function jumpWithId(id){
+        let url = "blog_detail.html?id=" + id;
+        location.href = url;
+    }
+
+
+    function deletWithId(id) {
+
+            $.ajax({
+                url: "/blog/delete",
+                type: "get",
+                data: "id=" + id,
+                dataType: "JSON",
+                success: function (json) {
+                    if (json.state == 200) {
+                        alert("删除成功！")
+                        $("#"+id).remove();
+                    } else {
+                        alert("删除失败")
+                    }
+                },
+                error: function (xhr) {
+                    //xhr.message可以获取未知异常的信息
+                    alert("删除时产生未知的异常!"+xhr.message);
+                }
+            });
+    }
+
+    function modifyWithId(id) {
+        let url = "blog_modify.html?id=" + id;
+        location.href = url;
+    }
+
+
+    window.addEventListener('pageshow', function(e) {
+        if (e.persisted) {
+            window.location.reload()
+        }
+    })
+
+</script>
+</html>

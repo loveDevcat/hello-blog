@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客详情页</title>
+    <link rel="stylesheet" href="http://localhost:8080/css/common.css">
+    <link rel="stylesheet" href="http://localhost:8080/css/blog_detail.css">
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div class="nav">
+        <img src="../imgs/风景.jpeg" alt="">
+        <span>我的博客系统</span>
+        <!-- 空白元素 实现占位 -->
+        <div class="spacer"></div>
+        <a href="blog_list.html">主页</a>
+        <a href="blog_edit.html">写博客</a>
+
+    </div>
+    <!-- 这里的.container作为页面的版心 -->
+    <div class="container">
+        <!-- 左侧个人信息 -->
+        <div class="left">
+            <!-- 表示整个用户的信息区域 -->
+            <div class="card">
+                <img src="../imgs/宝宝.jpg" alt="">
+                <h3>力高宝宝</h3>
+                <a href="#">github地址</a>
+                <div class="counter">
+                    <span>文章</span>
+                    <span>分类</span>
+                </div>
+                <div class="counter">
+                    <span>2</span>
+                    <span>1</span>
+                </div>
+            </div>
+        </div>
+        <!-- 右侧内容详情 -->
+        <div class="right">
+        <!-- 使用这个 div 来包裹整个博客的内容详情 -->
+        <div class="blog-content">
+            <!-- 博客标题 -->
+            <h3 class="title" id="article-title"></h3>
+            <!-- 博客的时间 -->
+            <div class="date" id="article-date"></div>
+            <!-- 正文 -->
+            <p id="article-content">
+
+            </p>
+
+            
+        </div>
+        </div>
+    </div>
+</body>
+<script>
+    $(document).ready(function(){
+        var pid = getOne();
+        showInThisProductHtml()
+
+        function showInThisProductHtml(){
+            //判断是否携带参数
+            if (location.search.substring(1).indexOf("id") === -1){
+                location.href = "500.html"
+                return false;
+            }
+
+            //在页面加载完成时自动发送此ajax请求并填充表单
+            $.ajax({
+                url: "/blog/findBlog/" + pid,
+                type: "get",
+                dataType: "json",
+                success:function (res) {
+                    let article = res.data;
+                    //将普通的数据填充至页面
+                    $("#article-title").text(article.btitle)
+                    $("#article-date").text(article.btime)
+                    $("#article-content").text(article.bcontext)
+
+                }
+            })
+        }
+    })
+
+    function getOne(){
+        var result;
+        //返回字符串从url的?处开始
+        var url = decodeURI(window.location.search);
+        //如果等于-1，代表没有找到，即网页连接没有携带任何参数
+        if (url.indexOf("?") != -1){
+            //返回一个新的字符串，从url连接=符号处索引+1的位置开始返回
+            result = url.substr(url.indexOf("=")+1);
+        }
+        return result;
+    }
+
+</script>
+</html>
